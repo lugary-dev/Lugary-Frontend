@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/client";
-import AuthRequiredModal from "../components/AuthRequiredModal";
-import { BookingCalendar } from "../components/espacios/BookingCalendar";
-import { ImageLightbox } from "../components/ImageLightbox";
+import AuthRequiredModal from "../components/EspaciosPage/AuthRequiredModal";
+import { BookingCalendar } from "../components/EspacioDetallePage/BookingCalendar";
+import { ImageLightbox } from "../components/EspacioDetallePage/ImageLightbox";
 import { useScrollLock } from "../hooks/useScrollLock";
 import { useShare } from "../hooks/useShare";
-import ShareModal from "../components/ShareModal";
-import Mapa from "../components/Mapa";
+import ShareModal from "../components/EspacioDetallePage/ShareModal";
+import Mapa from "../components/EspacioDetallePage/Mapa";
 import { MapContainer, TileLayer, Marker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';

@@ -40,3 +40,41 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Staggered fade-up for cards */
+@keyframes fadeUp {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.fade-up {
+  opacity: 0;
+  transform: translateY(10px);
+  animation-name: fadeUp;
+  animation-duration: 520ms;
+  animation-fill-mode: forwards;
+  animation-timing-function: cubic-bezier(.2,.9,.3,1);
+}
+
+/* Glassmorphic search bar background helper */
+.glass-bg {
+  background: rgba(255,255,255,0.98);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 18px 50px rgba(2,6,23,0.12);
+}
+
+/* Dark mode override for glass-bg */
+.dark .glass-bg {
+  background: rgba(8,15,25,0.96);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Inputs inside glass-bg: darker placeholder and better contrast */
+.glass-bg input {
+  color: #0b1220;
+}
+.glass-bg input::placeholder {
+  color: rgba(15,23,42,0.48);
+}
+

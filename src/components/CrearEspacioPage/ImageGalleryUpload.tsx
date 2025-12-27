@@ -76,7 +76,7 @@ export default function ImageGalleryUpload({ files, onChange, disabled = false }
     // pero el default del navegador suele estar bien.
   };
 
-  const handleDragOver = (e: React.DragEvent, index: number) => {
+  const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault(); // Necesario para permitir el drop
     e.dataTransfer.dropEffect = "move";
   };
@@ -144,7 +144,7 @@ export default function ImageGalleryUpload({ files, onChange, disabled = false }
                 key={`${file.name}-${index}`}
                 draggable
                 onDragStart={(e) => handleDragStart(e, index)}
-                onDragOver={(e) => handleDragOver(e, index)}
+                onDragOver={handleDragOver}
                 onDrop={(e) => handleDrop(e, index)}
                 className={`
                   relative group rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm cursor-move select-none

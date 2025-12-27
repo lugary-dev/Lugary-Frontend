@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/client";
-import AuthRequiredModal from "../components/AuthRequiredModal";
+import AuthRequiredModal from "../components/EspaciosPage/AuthRequiredModal";
 import { useDebounce } from "../hooks/useDebounce";
-import { EspaciosHeader } from "../components/EspaciosHeader";
+import { EspaciosHeader } from "../components/EspaciosPage/EspaciosHeader";
 
 // --- INTERFACES ---
 interface Espacio {
@@ -45,6 +45,14 @@ const PromotedSection = ({ espacios, onCardClick }: { espacios: Espacio[], onCar
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
 
+  const checkScroll = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setShowLeftArrow(scrollLeft > 0);
+      setShowRightArrow(Math.ceil(scrollLeft + clientWidth) < scrollWidth);
+    }
+  };
+
   // [NUEVO] Efecto para resetear el scroll al cambiar los espacios
   useEffect(() => {
     if (scrollRef.current) {
@@ -56,19 +64,13 @@ const PromotedSection = ({ espacios, onCardClick }: { espacios: Espacio[], onCar
 
   // [NUEVO] Efecto para detectar scroll y mostrar/ocultar flecha izquierda
   useEffect(() => {
-    const handleScroll = () => {
-      if (scrollRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-        setShowLeftArrow(scrollLeft > 0);
-        setShowRightArrow(Math.ceil(scrollLeft + clientWidth) < scrollWidth);
-      }
-    };
     const element = scrollRef.current;
     if (element) {
-      element.addEventListener('scroll', handleScroll);
+      element.addEventListener('scroll', checkScroll, { passive: true });
+      checkScroll(); // Verificar estado inicial
     }
     return () => {
-      if (element) element.removeEventListener('scroll', handleScroll);
+      if (element) element.removeEventListener('scroll', checkScroll);
     };
   }, []);
 
@@ -77,41 +79,45 @@ const PromotedSection = ({ espacios, onCardClick }: { espacios: Espacio[], onCar
       const { current } = scrollRef;
       const scrollAmount = direction === "left" ? -336 : 336; // Ancho de tarjeta + gap
       current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+      // Verificar estado después de scroll
+      setTimeout(checkScroll, 100);
     }
   };
 
   if (!espacios || espacios.length === 0) return null;
 
   return (
-    <section className="w-screen ml-[calc(50%-50vw)] py-16 bg-amber-50 dark:bg-slate-900/50 px-4 sm:px-8">
-      {/* Encabezado Premium */}
-      <div className="flex items-center gap-3 mb-6 px-1">
-        <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-full">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-amber-600 dark:text-amber-400">
-            <path fillRule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813a3.75 3.75 0 002.576-2.576l.813-2.846A.75.75 0 019 4.5zM6.97 11.03a.75.75 0 111.06-1.06l.75.75a.75.75 0 01-1.06 1.06l-.75-.75z" clipRule="evenodd" />
-            <path d="M18 9.75a.75.75 0 00-1.5 0v5a.75.75 0 001.5 0v-5z" />
-          </svg>
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            Destacados de la semana
-          </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Experiencias premium seleccionadas para vos.</p>
+    <section className="w-screen ml-[calc(50%-50vw)] py-16 bg-amber-50 dark:bg-slate-900/50">
+      <div className="max-w-7xl mx-auto px-1 md:px-2">
+        {/* Encabezado Premium */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-amber-600 dark:text-amber-400">
+              <path fillRule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813a3.75 3.75 0 002.576-2.576l.813-2.846A.75.75 0 019 4.5zM6.97 11.03a.75.75 0 111.06-1.06l.75.75a.75.75 0 01-1.06 1.06l-.75-.75z" clipRule="evenodd" />
+              <path d="M18 9.75a.75.75 0 00-1.5 0v5a.75.75 0 001.5 0v-5z" />
+            </svg>
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              Destacados de la semana
+            </h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Experiencias premium seleccionadas para vos.</p>
+          </div>
         </div>
       </div>
 
-      {/* Contenedor del Carrusel */}
-      <div className="relative group">
+      {/* Contenedor del Carrusel - FUERA del padding */}
+      <div className="relative group px-1 md:px-2 max-w-7xl mx-auto">
         {/* Botón Izquierda */}
         {showLeftArrow && (
-        <button
-          onClick={() => scroll("left")}
-          className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-20 w-12 h-12 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow-lg rounded-full flex items-center justify-center text-slate-700 dark:text-slate-200 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 border border-slate-200 dark:border-slate-700 hidden lg:flex"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
-        </button>
+          <button
+            onClick={() => scroll("left")}
+            className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 z-20 w-12 h-12 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm shadow-lg rounded-full flex items-center justify-center text-slate-700 dark:text-slate-200 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-110 border border-slate-200 dark:border-slate-700 hidden lg:flex"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+          </button>
         )}
 
         {/* Lista Scrolleable */}
@@ -126,7 +132,7 @@ const PromotedSection = ({ espacios, onCardClick }: { espacios: Espacio[], onCar
               className="flex-shrink-0 w-80 snap-center cursor-pointer group/card"
             >
               <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-lg hover:shadow-2xl hover:shadow-amber-500/20 dark:hover:shadow-amber-500/10 transition-all duration-300 border border-amber-200 dark:border-amber-800 overflow-hidden h-full relative hover:-translate-y-1">
-                
+
                 {/* Borde Superior Dorado */}
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-amber-300 via-yellow-500 to-amber-300 z-10"></div>
 
@@ -141,36 +147,53 @@ const PromotedSection = ({ espacios, onCardClick }: { espacios: Espacio[], onCar
                       onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1000&auto=format&fit=crop"; }}
                       className="w-full h-full object-cover group-hover/card:scale-105 transition-transform duration-700"
                     />
-                  
-                  {/* Badge Promocionado */}
-                  <div className="absolute top-4 left-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur px-3 py-1.5 rounded-full text-xs font-extrabold text-amber-700 dark:text-amber-400 shadow-sm border border-amber-100 dark:border-amber-900/30 flex items-center gap-1.5 tracking-wide">
+
+                  {/* Badge Capacidad (igual que en el grid) */}
+                  <div className="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-medium text-slate-700 dark:text-slate-300 shadow-sm">
+                    Hasta {espacio.capacidadMaxima} pers.
+                  </div>
+
+                  {/* Badge Promocionado (mover al extremo derecho) */}
+                  <div className="absolute top-4 right-4 bg-white/95 dark:bg-slate-900/95 px-3 py-1.5 rounded-full text-xs font-extrabold text-amber-700 dark:text-amber-400 shadow-sm border border-amber-100 dark:border-amber-900/30 flex items-center gap-1.5 tracking-wide">
                     <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.6)]"></span>
                     PROMOCIONADO
                   </div>
                 </div>
 
-                {/* Contenido */}
-                <div className="p-5">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-lg text-slate-900 dark:text-white line-clamp-1 group-hover/card:text-amber-600 dark:group-hover/card:text-amber-400 transition-colors">
-                      {espacio.nombre}
-                    </h3>
-                    <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-800 px-1.5 py-0.5 rounded text-xs font-bold text-slate-700 dark:text-slate-300">
-                      <span>★</span> {espacio.calificacion?.toFixed(1) || "N/A"}
+                {/* Contenido - replicamos exactamente el mismo flujo que en el grid */}
+                <div className="p-5 flex flex-col flex-1">
+                  {/* Calificación */}
+                  {(espacio.calificacion ?? 0) > 0 ? (
+                    <div className="flex items-center gap-1">
+                      <svg className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.728c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                      <span className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                        {espacio.calificacion?.toFixed(1)}
+                      </span>
                     </div>
+                  ) : (
+                    <div className="flex items-center h-5">
+                      <p className="text-xs italic text-slate-400 dark:text-slate-500">
+                        Sin calificación aún
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Separador */}
+                  <div className="my-3 border-b border-slate-100 dark:border-slate-800"></div>
+
+                  {/* Nombre y Dirección */}
+                  <div className="mb-3">
+                    <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 mb-1">{espacio.nombre}</h2>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-1 min-w-0">{[espacio.ciudad, espacio.provincia].filter(Boolean).join(", ") || (espacio.direccion.split(',').length > 1 ? espacio.direccion.split(',').slice(1).join(',').trim() : espacio.direccion)}</p>
                   </div>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-1 mb-4">
-                    {[espacio.ciudad, espacio.provincia].filter(Boolean).join(", ") ||
-                      (espacio.direccion.split(',').length > 1 ?
-                        espacio.direccion.split(',').slice(1).join(',').trim() :
-                        espacio.direccion)}
-                  </p>
-                  
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800">
-                    <span className="text-lg font-extrabold text-slate-900 dark:text-white">
-                      ${espacio.precio.toLocaleString("es-AR")}
-                    </span>
-                    <span className="text-xs font-medium text-blue-600 dark:text-blue-400 group-hover/card:underline">Ver detalles</span>
+
+                  <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <div>
+                      <p className="text-xs text-slate-500 dark:text-slate-500 mb-0.5">Precio</p>
+                      <p className="text-xl font-extrabold text-slate-900 dark:text-white">${espacio.precio.toLocaleString("es-AR")} <span className="text-sm font-normal text-slate-500 dark:text-slate-400">/ hora</span></p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -382,7 +405,7 @@ export default function EspaciosPage() {
       )}
 
       {/* GRID DE RESULTADOS (Contenido Centrado) */}
-      <main className="max-w-7xl mx-auto px-2 md:px-4 py-12">
+      <main className="max-w-7xl mx-auto px-1 md:px-2 py-12">
         {cargando ? (
           <div className="flex flex-col items-center justify-center py-20 text-slate-500 dark:text-slate-400">
             <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4" />
@@ -429,7 +452,7 @@ export default function EspaciosPage() {
 
           {/* GRID PRINCIPAL */}
           {/* Se elimina pt-8 porque el espaciado ahora lo maneja el título de arriba */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3">
             {espacios.map((espacio) => (
             <div
               key={espacio.id}

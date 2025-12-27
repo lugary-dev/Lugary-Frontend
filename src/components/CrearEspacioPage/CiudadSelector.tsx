@@ -11,7 +11,7 @@ interface Props {
   maxLength?: number;
 }
 
-export default function SearchableSelect({ options, loading = false, value, onChange, disabled, label, placeholder, maxLength }: Props) {
+export default function CiudadSelector({ options, loading = false, value, onChange, disabled, label, placeholder, maxLength }: Props) {
   const [sugerencias, setSugerencias] = useState<string[]>([]); // Filtro tiempo real
   const [mostrarLista, setMostrarLista] = useState(false);
   

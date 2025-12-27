@@ -4,10 +4,8 @@ import { LuCircleCheck } from "react-icons/lu";
 interface PasoPreferenciasProps {
   tipoReserva: 'INSTANTANEA' | 'MANUAL';
   setTipoReserva: (v: 'INSTANTANEA' | 'MANUAL') => void;
-  requireTelefonoVerificado: boolean;
-  setRequireTelefonoVerificado: (v: boolean) => void;
-  requireIdentidadVerificada: boolean;
-  setRequireIdentidadVerificada: (v: boolean) => void;
+  acceptUnverifiedUsers: boolean;
+  setAcceptUnverifiedUsers: (v: boolean) => void;
   mostrarDireccionExacta: 'DESPUES_DE_CONFIRMAR' | 'APROXIMADA';
   setMostrarDireccionExacta: (v: 'DESPUES_DE_CONFIRMAR' | 'APROXIMADA') => void;
   avisoMinimo: number;
@@ -41,8 +39,7 @@ interface PasoPreferenciasProps {
 
 const PasoPreferencias = ({
     tipoReserva, setTipoReserva,
-    requireTelefonoVerificado, setRequireTelefonoVerificado,
-    requireIdentidadVerificada, setRequireIdentidadVerificada,
+    acceptUnverifiedUsers, setAcceptUnverifiedUsers,
     mostrarDireccionExacta, setMostrarDireccionExacta,
     avisoMinimo, setAvisoMinimo,
     anticipacionMaxima, setAnticipacionMaxima,
@@ -133,41 +130,18 @@ const PasoPreferencias = ({
           <section>
             <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Requisitos para Reservar</h3>
             <div className="space-y-4">
-              {/* Teléfono */}
+              {/* Aceptar usuarios sin cuenta */}
               <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
                 <div>
-                  <p className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                    Teléfono verificado
-                    <span className="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">RECOMENDADO</span>
-                  </p>
-                  <p className="text-xs text-slate-500 mt-0.5">Exigir que el usuario tenga un número validado.</p>
+                  <p className="font-semibold text-slate-900 dark:text-white">Aceptar reservas de usuarios sin cuenta</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Permitir que usuarios sin perfil verificado realicen reservas.</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
                   <input 
                     type="checkbox" 
                     className="sr-only peer" 
-                    checked={requireTelefonoVerificado}
-                    onChange={(e) => handleChange(setRequireTelefonoVerificado, e.target.checked)}
-                  />
-                  <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                </label>
-              </div>
-
-              {/* Identidad */}
-              <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
-                <div>
-                  <p className="font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-                    Identidad verificada
-                    <span className="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded">RECOMENDADO</span>
-                  </p>
-                  <p className="text-xs text-slate-500 mt-0.5">Se solicitará al huésped foto de DNI/Pasaporte.</p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input 
-                    type="checkbox" 
-                    className="sr-only peer" 
-                    checked={requireIdentidadVerificada}
-                    onChange={(e) => handleChange(setRequireIdentidadVerificada, e.target.checked)}
+                    checked={acceptUnverifiedUsers}
+                    onChange={(e) => handleChange(setAcceptUnverifiedUsers, e.target.checked)}
                   />
                   <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 </label>

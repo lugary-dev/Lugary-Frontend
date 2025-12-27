@@ -6,13 +6,13 @@ import {
   LuGlobe, LuSettings, LuCircleCheck, LuCircleX, LuClock, LuChevronRight, 
   LuCircleHelp, LuLogOut
 } from "react-icons/lu";
-import LogoutModal from "../components/LogoutModal";
-import { PersonalDataSection } from "../components/profile/PersonalDataSection"; // Ajusta la ruta
-import { SecuritySection } from "../components/profile/SecuritySection";
-import { PaymentMethodsSection } from "../components/profile/PaymentMethodsSection";
-import { PreferencesSection } from "../components/profile/PreferencesSection";
-import { HelpCenterSection } from "../components/profile/HelpCenterSection";
-import { CustomerServiceSection } from "../components/profile/CustomerServiceSection";
+import LogoutModal from "../components/PerfilPage/LogoutModal";
+import { PersonalDataSection } from "../components/PerfilPage/PersonalDataSection"; // Ajusta la ruta
+import { SecuritySection } from "../components/PerfilPage/SecuritySection";
+import { PaymentMethodsSection } from "../components/PerfilPage/PaymentMethodsSection";
+import { PreferencesSection } from "../components/PerfilPage/PreferencesSection";
+import { HelpCenterSection } from "../components/PerfilPage/HelpCenterSection";
+import { CustomerServiceSection } from "../components/PerfilPage/CustomerServiceSection";
 
 // --- Tipos y Helpers para Navegación ---
 

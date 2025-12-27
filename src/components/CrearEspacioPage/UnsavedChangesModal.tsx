@@ -1,7 +1,7 @@
 import { useBlocker } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-import { useScrollLock } from "../hooks/useScrollLock";
+import { useScrollLock } from "../../hooks/useScrollLock";
 
 interface Props {
   isDirty: boolean;

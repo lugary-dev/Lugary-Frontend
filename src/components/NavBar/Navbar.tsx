@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext";
-import logoImg from "../images/Logo.png";
-import AuthRequiredModal from "./AuthRequiredModal";
-import LogoutModal from "./LogoutModal"; 
-import { NotificationsPopover } from "./notifications/NotificationsPopover";
+import { useTheme } from "../../context/ThemeContext";
+import logoImg from "../../images/Logo.png";
+import AuthRequiredModal from "../EspaciosPage/AuthRequiredModal";
+import LogoutModal from "../PerfilPage/LogoutModal"; 
+import { NotificationsPopover } from "./NotificationsPopover";
 
 /**
  * Barra de navegación principal de la aplicación autenticada.

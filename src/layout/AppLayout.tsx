@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import Navbar from "../components/Navbar"; 
-import { ChatModal } from "../components/chat/ChatModal"; // Importamos el modal que creamos
+import Navbar from "../components/NavBar/Navbar"; 
+import { ChatModal } from "../components/NavBar/ChatModal"; // Importamos el modal que creamos
 
 const AppLayout = () => {
   // Estado para controlar la visibilidad del Chat

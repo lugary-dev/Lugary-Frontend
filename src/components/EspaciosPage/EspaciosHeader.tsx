@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useRef, useState, useEffect } from "react";
+import bannerImg from "../../images/banner.png";
 
 interface EspaciosHeaderProps {
   busqueda: string;
@@ -40,6 +41,39 @@ export const EspaciosHeader = ({
   setLocationError,
 }: EspaciosHeaderProps) => {
 
+  const searchBarRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
+  const [isSearchBarSticky, setIsSearchBarSticky] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (headerRef.current && searchBarRef.current) {
+        const headerRect = headerRef.current.getBoundingClientRect();
+        const headerBottom = headerRect.bottom;
+        const navHeight = 64;
+        
+        // Solo hace sticky cuando header ya pasó completamente
+        // Esto evita flickering y movimientos bruscos
+        const shouldBeSticky = headerBottom <= navHeight;
+        setIsSearchBarSticky(shouldBeSticky);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const scrollToSearchBar = () => {
+    setTimeout(() => {
+      if (searchBarRef.current) {
+        const rect = searchBarRef.current.getBoundingClientRect();
+        const navHeight = 64; // altura aproximada de la navbar
+        const scrollPosition = window.scrollY + rect.top - navHeight - 2;
+        window.scrollTo({ top: scrollPosition, behavior: "smooth" });
+      }
+    }, 100);
+  };
+
   const handleFilterToggle = (
     menu: "tipo" | "capacidad" | "estrellas" | "distancia"
   ) => {
@@ -47,6 +81,7 @@ export const EspaciosHeader = ({
       onAuthRequired();
     } else {
       setOpenDropdown(openDropdown === menu ? null : menu);
+      scrollToSearchBar();
     }
   };
 
@@ -103,37 +138,28 @@ export const EspaciosHeader = ({
     filtroDistancia !== null;
 
   return (
-    <section className="relative w-screen ml-[calc(50%-50vw)] -mt-8 h-[550px]">
+    <section ref={headerRef} className="relative w-screen ml-[calc(50%-50vw)] -mt-8 h-[550px]">
       {/* Contenedor de Fondo con Imagen y Overlay */}
       <div className="absolute inset-0 overflow-hidden">
         <img 
-          src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=2069&auto=format&fit=crop" 
-          alt="Salón de eventos elegante"
+          src={bannerImg} 
+          alt="Banner Lugary" 
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-black/20"></div>
-      </div>
-
-      {/* Contenido Central (Título y Subtítulo) */}
-      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4">
-        <h1 className="text-5xl md:text-6xl font-extrabold text-white shadow-lg">
-          Encontrá el espacio perfecto
-        </h1>
-        <p className="mt-4 text-lg text-white/90 max-w-2xl mx-auto">
-          Salones, quintas y espacios únicos para tu próximo evento.
-        </p>
+        <div className="absolute inset-0 bg-black/20"></div>
       </div>
 
       {/* Barra de Búsqueda Flotante */}
-      <div className="absolute bottom-0 translate-y-1/2 left-1/2 -translate-x-1/2 w-full max-w-5xl z-20 px-4">
-        <div className="w-full bg-white dark:bg-slate-900 rounded-full shadow-2xl p-2 flex items-center gap-2 border border-slate-100 dark:border-slate-800">
+      <div ref={searchBarRef} className={`${isSearchBarSticky ? 'fixed top-16 left-1/2 -translate-x-1/2 w-screen z-40 px-4 py-3' : 'absolute bottom-0 translate-y-1/2 left-1/2 -translate-x-1/2 z-20 px-4'} w-full max-w-5xl transition-all duration-500 ease-out`}>
+        <div className="w-full rounded-[20px] shadow-xl p-3 flex items-center gap-3 bg-white/95 dark:bg-slate-800/90 backdrop-blur-lg">
           {/* Input de búsqueda principal */}
           <input
             type="text"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
+            onFocus={scrollToSearchBar}
             placeholder="Buscar por nombre o ciudad..."
-            className="flex-grow bg-transparent focus:outline-none px-4 py-2 text-slate-800 dark:text-white placeholder:text-slate-400"
+            className="flex-grow bg-transparent focus:outline-none px-5 py-4 text-slate-900 placeholder:text-slate-500 transition-all duration-200"
           />
           
           {/* Divisor y Filtros */}
@@ -142,7 +168,7 @@ export const EspaciosHeader = ({
           <div className="hidden lg:flex items-center">
             {/* --- FILTRO TIPO --- */}
             <div className="relative">
-              <button onClick={() => handleFilterToggle("tipo")} className={`px-4 py-2 rounded-full text-sm font-medium flex items-center gap-1.5 transition-colors ${filtroTipo ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
+              <button onClick={() => handleFilterToggle("tipo")} className={`px-4 py-2 rounded-full text-sm font-medium flex items-center gap-1.5 transition-colors ${filtroTipo ? 'bg-white/100 dark:bg-slate-800/95 text-[#1A202C] font-semibold' : 'bg-white/80 dark:bg-slate-800/88 text-slate-800 dark:text-slate-200 hover:bg-white/95 dark:hover:bg-slate-800/95'}`}>
                 {filtroTipo || 'Tipo'}
                 <svg className={`w-3 h-3 transition-transform ${openDropdown === "tipo" ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" /></svg>
               </button>
@@ -160,7 +186,7 @@ export const EspaciosHeader = ({
 
             {/* --- FILTRO CAPACIDAD --- */}
             <div className="relative">
-              <button onClick={() => handleFilterToggle("capacidad")} className={`px-4 py-2 rounded-full text-sm font-medium flex items-center gap-1.5 transition-colors ${filtroCapacidad ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
+              <button onClick={() => handleFilterToggle("capacidad")} className={`px-4 py-2 rounded-full text-sm font-medium flex items-center gap-1.5 transition-colors ${filtroCapacidad ? 'bg-white/100 dark:bg-slate-800/95 text-[#1A202C] font-semibold' : 'bg-white/80 dark:bg-slate-800/88 text-slate-800 dark:text-slate-200 hover:bg-white/95 dark:hover:bg-slate-800/95'}`}>
                 {filtroCapacidad ? `${filtroCapacidad}+ pers.` : 'Capacidad'}
                 <svg className={`w-3 h-3 transition-transform ${openDropdown === "capacidad" ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" /></svg>
               </button>
@@ -178,7 +204,7 @@ export const EspaciosHeader = ({
 
             {/* --- FILTRO CALIFICACIÓN --- */}
             <div className="relative">
-              <button onClick={() => handleFilterToggle("estrellas")} className={`px-4 py-2 rounded-full text-sm font-medium flex items-center gap-1.5 transition-colors ${filtroEstrellas ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
+              <button onClick={() => handleFilterToggle("estrellas")} className={`px-4 py-2 rounded-full text-sm font-medium flex items-center gap-1.5 transition-colors ${filtroEstrellas ? 'bg-white/100 dark:bg-slate-800/95 text-[#1A202C] font-semibold' : 'bg-white/80 dark:bg-slate-800/88 text-slate-800 dark:text-slate-200 hover:bg-white/95 dark:hover:bg-slate-800/95'}`}>
                 {filtroEstrellas ? `${filtroEstrellas}★+` : 'Calificación'}
                 <svg className={`w-3 h-3 transition-transform ${openDropdown === "estrellas" ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" /></svg>
               </button>
@@ -196,7 +222,7 @@ export const EspaciosHeader = ({
 
             {/* --- FILTRO CERCANÍA --- */}
             <div className="relative">
-              <button onClick={() => handleFilterToggle("distancia")} className={`px-4 py-2 rounded-full text-sm font-medium flex items-center gap-1.5 transition-colors ${filtroDistancia ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
+              <button onClick={() => handleFilterToggle("distancia")} className={`px-4 py-2 rounded-full text-sm font-medium flex items-center gap-1.5 transition-colors ${filtroDistancia ? 'bg-white/100 dark:bg-slate-800/95 text-[#1A202C] font-semibold' : 'bg-white/80 dark:bg-slate-800/88 text-slate-800 dark:text-slate-200 hover:bg-white/95 dark:hover:bg-slate-800/95'}`}>
                 {filtroDistancia ? `< ${filtroDistancia}km` : 'Cercanía'}
                 <svg className={`w-3 h-3 transition-transform ${openDropdown === "distancia" ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" /></svg>
               </button>

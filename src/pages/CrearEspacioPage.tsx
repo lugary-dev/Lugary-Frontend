@@ -3,14 +3,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/client";
 import imageCompression from 'browser-image-compression';
 import axios from "axios";
-import UnsavedChangesModal from "../components/UnsavedChangesModal";
+import UnsavedChangesModal from "../components/CrearEspacioPage/UnsavedChangesModal";
 import { useScrollLock } from "../hooks/useScrollLock";
 
 // Importar los nuevos componentes
-import PasoBasico from "../components/espacios/steps/PasoBasico";
-import PasoDetalles from "../components/espacios/steps/PasoPrecio";
-import PasoPreferencias from "../components/espacios/steps/PasoPreferencias";
-import VistaPrevia from "../components/espacios/steps/VistaPrevia";
+import PasoBasico from "../components/CrearEspacioPage/PasoBasico";
+import PasoDetalles from "../components/CrearEspacioPage/PasoPrecio";
+import PasoPreferencias from "../components/CrearEspacioPage/PasoPreferencias";
+import VistaPrevia from "../components/CrearEspacioPage/VistaPrevia";
 
 // Barra de Progreso
 const ProgressBar = ({ step, highestStep, onStepClick }: { step: 1 | 2 | 3, highestStep: 1 | 2 | 3, onStepClick: (step: 1 | 2 | 3) => void }) => (
@@ -60,8 +60,7 @@ interface CrearEspacioPayload {
   estado: 'PUBLICADO' | 'BORRADOR';
   // Nuevos campos de preferencias
   tipoReserva: string;
-  requireTelefonoVerificado: boolean;
-  requireIdentidadVerificada: boolean;
+  acceptUnverifiedUsers: boolean;
   mostrarDireccionExacta: string;
   avisoMinimo: number;
   anticipacionMaxima: number;
@@ -107,8 +106,7 @@ export default function CrearEspacioPage() {
 
   // Estados de Preferencias (Paso 3)
   const [tipoReserva, setTipoReserva] = useState<'INSTANTANEA' | 'MANUAL'>('MANUAL');
-  const [requireTelefonoVerificado, setRequireTelefonoVerificado] = useState(false);
-  const [requireIdentidadVerificada, setRequireIdentidadVerificada] = useState(false);
+  const [acceptUnverifiedUsers, setAcceptUnverifiedUsers] = useState(false);
   const [mostrarDireccionExacta, setMostrarDireccionExacta] = useState<'DESPUES_DE_CONFIRMAR' | 'APROXIMADA'>('APROXIMADA');
   const [avisoMinimo, setAvisoMinimo] = useState(24);
   const [anticipacionMaxima, setAnticipacionMaxima] = useState(3);
@@ -239,8 +237,7 @@ export default function CrearEspacioPage() {
 
           // Cargar preferencias
           setTipoReserva(data.tipoReserva || 'MANUAL');
-          setRequireTelefonoVerificado(data.requireTelefonoVerificado || false);
-          setRequireIdentidadVerificada(data.requireIdentidadVerificada || false);
+          setAcceptUnverifiedUsers(data.acceptUnverifiedUsers || false);
           setMostrarDireccionExacta(data.mostrarDireccionExacta || 'APROXIMADA');
           setAvisoMinimo(data.avisoMinimo || 24);
           setAnticipacionMaxima(data.anticipacionMaxima || 3);
@@ -353,8 +350,7 @@ export default function CrearEspacioPage() {
         estado: isDraft ? 'BORRADOR' : 'PUBLICADO',
         // Nuevos campos
         tipoReserva,
-        requireTelefonoVerificado,
-        requireIdentidadVerificada,
+        acceptUnverifiedUsers,
         mostrarDireccionExacta,
         avisoMinimo,
         anticipacionMaxima,
@@ -571,8 +567,7 @@ export default function CrearEspacioPage() {
             {step === 3 && (
               <PasoPreferencias
                 tipoReserva={tipoReserva} setTipoReserva={setTipoReserva}
-                requireTelefonoVerificado={requireTelefonoVerificado} setRequireTelefonoVerificado={setRequireTelefonoVerificado}
-                requireIdentidadVerificada={requireIdentidadVerificada} setRequireIdentidadVerificada={setRequireIdentidadVerificada}
+                acceptUnverifiedUsers={acceptUnverifiedUsers} setAcceptUnverifiedUsers={setAcceptUnverifiedUsers}
                 mostrarDireccionExacta={mostrarDireccionExacta} setMostrarDireccionExacta={setMostrarDireccionExacta}
                 avisoMinimo={avisoMinimo} setAvisoMinimo={setAvisoMinimo}
                 anticipacionMaxima={anticipacionMaxima} setAnticipacionMaxima={setAnticipacionMaxima}

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import SearchableSelect from "../../CiudadSelector";
+import SearchableSelect from "./CiudadSelector";
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -301,7 +301,7 @@ export default function PasoBasico({
     setAiLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const resp = await fetch("/api/ai/generate-description", {
+      const resp = await fetch("http://localhost:8080/api/ai/generate-description", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
