@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
-import RegistroPage from "./pages/RegistroPage";
 import EspaciosPage from "./pages/EspaciosPage";
 import EspacioDetallePage from "./pages/EspacioDetallePage";
 import CrearEspacioPage from "./pages/CrearEspacioPage";
@@ -34,7 +33,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/registro",
-    element: <RegistroPage />,
+    element: <LoginPage />,
   },
 ]);
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation, useNavigate } from "react-router-dom";
 import type { Variants } from "framer-motion";
 import logoImg from "../images/Logo.png";
 import LoginForm from "../components/LoginPage/LoginForm";
@@ -22,7 +23,11 @@ const backgroundImages = [
  * - Layout responsivo (split desktop, stack mobile)
  */
 export default function LoginPage() {
-  const [view, setView] = useState<"login" | "register" | "forgot-password">("login");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [view, setView] = useState<"login" | "register" | "forgot-password">(
+    location.pathname === "/registro" ? "register" : "login"
+  );
   const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -32,6 +37,16 @@ export default function LoginPage() {
     }, 5000); // Cambia cada 5 segundos
     return () => clearInterval(interval);
   }, []);
+
+  // Efecto para cambiar la vista si el usuario navega
+  // entre login y registro mientras la página ya está abierta
+  useEffect(() => {
+    if (location.pathname === "/registro") {
+      setView("register");
+    } else if (location.pathname === "/login") {
+      setView("login");
+    }
+  }, [location.pathname]);
 
   // Configuración de la animación de la tarjeta
   const cardVariants: Variants = {
@@ -100,7 +115,7 @@ export default function LoginPage() {
                   exit="exit"
                   className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-white/20"
                 >
-                  <LoginForm onSwitchToRegister={() => setView("register")} onSwitchToForgotPassword={() => setView("forgot-password")} />
+                  <LoginForm onSwitchToRegister={() => navigate("/registro")} onSwitchToForgotPassword={() => setView("forgot-password")} />
                 </motion.div>
               )}
               {view === "register" && (
@@ -112,7 +127,7 @@ export default function LoginPage() {
                   exit="exit"
                   className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-white/20"
                 >
-                  <RegisterForm onSwitchToLogin={() => setView("login")} onOpenTerms={() => setIsTermsModalOpen(true)} />
+                  <RegisterForm onSwitchToLogin={() => navigate("/login")} onOpenTerms={() => setIsTermsModalOpen(true)} />
                 </motion.div>
               )}
               {view === "forgot-password" && (
