@@ -9,7 +9,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import api from "../../api/client";
 import axios from "axios";
 import logoImg from "../../images/Logo.png";
-import { EyeIcon, GoogleIcon } from "./Icons";
+import { EyeIcon, GoogleIcon, FacebookIcon } from "./Icons";
 
 interface LoginResponse {
   token: string;
@@ -17,6 +17,7 @@ interface LoginResponse {
   email: string;
   rol: string;
   userId: number;
+  firstLogin: boolean; // [NUEVO] Campo añadido
 }
 
 interface Props {
@@ -82,13 +83,14 @@ export default function LoginForm({
         email,
         password,
       });
-      const { token, email: emailUsuario, rol, userId } = response.data;
+      const { token, email: emailUsuario, rol, userId, firstLogin } = response.data;
 
       // Almacenar credenciales en localStorage
       localStorage.setItem("token", token);
       localStorage.setItem("userEmail", emailUsuario);
       localStorage.setItem("userRol", rol);
       localStorage.setItem("userId", String(userId));
+      localStorage.setItem("firstLogin", String(firstLogin)); // [NUEVO] Guardar flag
 
       // Redirigir a página de origen o home
       const from = location.state?.from?.pathname || "/";
@@ -266,14 +268,23 @@ export default function LoginForm({
         </div>
       </div>
 
-      {/* Botón Google OAuth */}
-      <button
-        type="button"
-        className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-medium text-slate-700 dark:text-slate-200"
-      >
-        <GoogleIcon />
-        Continuar con Google
-      </button>
+      {/* Botones OAuth */}
+      <div className="space-y-3">
+        <button
+          type="button"
+          className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-medium text-slate-700 dark:text-slate-200"
+        >
+          <GoogleIcon />
+          Continuar con Google
+        </button>
+        <button
+          type="button"
+          className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-medium text-slate-700 dark:text-slate-200"
+        >
+          <FacebookIcon />
+          Continuar con Facebook
+        </button>
+      </div>
 
       {/* Link a Registro */}
       <p className="mt-8 text-center text-sm text-slate-600 dark:text-slate-400">

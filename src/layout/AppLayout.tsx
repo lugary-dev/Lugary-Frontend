@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/NavBar/Navbar"; 
 import { ChatModal } from "../components/NavBar/ChatModal"; // Importamos el modal que creamos
+import WelcomeModal from "../components/WelcomeModal"; // [NUEVO] Importar el modal
 
 const AppLayout = () => {
   // Estado para controlar la visibilidad del Chat
@@ -28,6 +29,9 @@ const AppLayout = () => {
         isOpen={isChatOpen} 
         onClose={() => setIsChatOpen(false)} 
       />
+
+      {/* [NUEVO] Modal de Bienvenida: Se auto-gestiona su visibilidad */}
+      <WelcomeModal />
       
     </div>
   );

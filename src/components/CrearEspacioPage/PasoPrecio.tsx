@@ -3,9 +3,15 @@ import { useDropzone } from "react-dropzone";
 import { 
   LuCloudUpload, LuDollarSign, 
   LuWifi, LuSnowflake, LuMusic, LuTv, LuUtensils, 
-  LuTrash2, LuBan, LuVolume2, LuUsers, LuCigaretteOff 
+  LuTrash2,
+  LuFlame, LuDumbbell, LuGamepad2, LuChefHat, LuSun
 } from "react-icons/lu";
-import { TbGrill, TbPool, TbAirConditioning, TbParking } from "react-icons/tb";
+import { 
+  TbGrill, TbPool, TbAirConditioning, TbParking,
+  TbBallFootball, TbBallTennis, TbBallBasketball, 
+  TbTable, TbBath, TbPingPong
+} from "react-icons/tb";
+import { GiEightBall } from "react-icons/gi";
 
 // 1. Definición de la Interfaz Completa
 interface PasoDetallesProps {
@@ -44,23 +50,42 @@ interface PasoDetallesProps {
 }
 
 const SERVICIOS_LIST = [
+  // Básicos
   { id: "wifi", label: "Wifi", icon: <LuWifi /> },
-  { id: "parrilla", label: "Parrilla", icon: <TbGrill /> },
-  { id: "pileta", label: "Pileta", icon: <TbPool /> },
-  { id: "aire acondicionado", label: "Aire Acondicionado", icon: <TbAirConditioning /> },
-  { id: "calefaccion", label: "Calefacción", icon: <LuSnowflake /> },
-  { id: "estacionamiento", label: "Estacionamiento", icon: <TbParking /> },
+  { id: "cocina", label: "Cocina", icon: <LuChefHat /> },
   { id: "vajilla", label: "Vajilla", icon: <LuUtensils /> },
-  { id: "equipo de musica", label: "Equipo de Música", icon: <LuMusic /> },
-  { id: "tv", label: "Smart TV", icon: <LuTv /> },
+  { id: "sillas_mesas", label: "Mesas y Sillas", icon: <TbTable /> },
+  
+  // Climatización y TV
+  { id: "aire_acondicionado", label: "Aire Acondicionado", icon: <TbAirConditioning /> },
+  { id: "calefaccion", label: "Calefacción", icon: <LuSnowflake /> },
+  { id: "tv", label: "Televisión", icon: <LuTv /> }, // Cambiado de Smart TV
+  { id: "equipo_musica", label: "Equipo de Música", icon: <LuMusic /> },
+
+  // Exterior y Agua
+  { id: "parrilla", label: "Parrilla", icon: <TbGrill /> },
+  { id: "fogon", label: "Fogón", icon: <LuFlame /> },
+  { id: "pileta", label: "Pileta", icon: <TbPool /> },
+  { id: "jacuzzi", label: "Jacuzzi", icon: <TbBath /> },
+  { id: "terraza", label: "Terraza", icon: <LuSun /> },
+  { id: "estacionamiento", label: "Estacionamiento", icon: <TbParking /> },
+
+  // Deportes y Juegos
+  { id: "futbol", label: "Cancha Fútbol", icon: <TbBallFootball /> },
+  { id: "tenis", label: "Cancha Tenis", icon: <TbBallTennis /> },
+  { id: "basquet", label: "Cancha Básquet", icon: <TbBallBasketball /> },
+  { id: "gym", label: "Gimnasio", icon: <LuDumbbell /> },
+  { id: "pool", label: "Pool", icon: <GiEightBall /> },
+  { id: "metegol", label: "Metegol", icon: <LuGamepad2 /> },
+  { id: "pingpong", label: "Ping Pong", icon: <TbPingPong /> },
 ];
 
 const REGLAS_LIST = [
-  { id: "no fumar adentro", label: "No fumar adentro", icon: <LuCigaretteOff /> },
-  { id: "no se permiten mascotas", label: "No mascotas", icon: <LuBan /> },
-  { id: "musica moderada", label: "Música moderada", icon: <LuVolume2 /> },
-  { id: "capacidad maxima", label: "Respeta capacidad", icon: <LuUsers /> },
-  { id: "basura", label: "Llevarse la basura", icon: <LuTrash2 /> },
+  { id: "no fumar adentro", label: "No fumar adentro", icon: "🚭" },
+  { id: "no se permiten mascotas", label: "No mascotas", icon: "🚫" },
+  { id: "musica moderada", label: "Música moderada", icon: "🔉" },
+  { id: "capacidad maxima", label: "Respeta capacidad", icon: "👥" },
+  { id: "basura", label: "Llevarse la basura", icon: "🗑️" },
 ];
 
 const PasoPrecio = ({
@@ -124,7 +149,7 @@ const PasoPrecio = ({
   const handleContinue = () => {
     if (!capacidadMaxima) { setErrorField("capacidad"); return; }
     if (!precio) { setErrorField("precio"); return; }
-    if (uploadedFiles.length === 0) { setErrorField("imagenes"); return; }
+    if (uploadedFiles.length < 5) { setErrorField("imagenes"); return; }
     
     setErrorField(null);
     onContinue();
@@ -285,20 +310,20 @@ const PasoPrecio = ({
       {/* 4. Reglas del Lugar */}
       <section>
         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Reglas del Lugar</h3>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
           {REGLAS_LIST.map((item) => (
             <button
               key={item.id}
               type="button"
               onClick={() => toggleItem(reglas, setReglas, item.id)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-sm font-medium transition-all ${
+              className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${
                 reglas.includes(item.id)
-                  ? "border-red-200 bg-red-50 text-red-600 dark:bg-red-900/20 dark:border-red-900"
+                  ? "border-red-500 bg-red-50 text-red-700 dark:bg-red-900/20 dark:border-red-500/50"
                   : "border-slate-200 dark:border-slate-700 text-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800"
               }`}
             >
-              {item.icon}
-              {item.label}
+              <div className="text-xl mb-1">{item.icon}</div>
+              <span className="text-xs font-medium text-center">{item.label}</span>
             </button>
           ))}
         </div>
@@ -336,7 +361,7 @@ const PasoPrecio = ({
         </div>
         
         {errorField === 'imagenes' && (
-          <p className="text-red-500 text-xs mt-2 font-medium">Debés subir al menos una foto para continuar.</p>
+          <p className="text-red-500 text-xs mt-2 font-medium">Debés subir al menos 5 fotos para continuar.</p>
         )}
 
         {/* Grid de previsualización */}

@@ -9,7 +9,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import api from "../../api/client";
 import axios from "axios";
 import logoImg from "../../images/Logo.png";
-import { EyeIcon, ShieldCheckIcon } from "./Icons";
+import { EyeIcon, ShieldCheckIcon, GoogleIcon, FacebookIcon } from "./Icons";
 import RequisitoItem from "./RequisitoItem";
 
 interface LoginResponse {
@@ -18,6 +18,7 @@ interface LoginResponse {
   email: string;
   rol: string;
   userId: number;
+  firstLogin: boolean; // [NUEVO] Campo añadido
 }
 
 interface Props {
@@ -120,13 +121,14 @@ export default function RegisterForm({ onSwitchToLogin, onOpenTerms }: Props) {
         email,
         password,
       });
-      const { token, email: emailUsuario, rol, userId } = loginResponse.data;
+      const { token, email: emailUsuario, rol, userId, firstLogin } = loginResponse.data;
 
       // Almacenar credenciales
       localStorage.setItem("token", token);
       localStorage.setItem("userEmail", emailUsuario);
       localStorage.setItem("userRol", rol);
       localStorage.setItem("userId", String(userId));
+      localStorage.setItem("firstLogin", String(firstLogin)); // [NUEVO] Guardar flag
 
       // Redirigir
       const from = location.state?.from?.pathname || "/";
@@ -345,8 +347,38 @@ export default function RegisterForm({ onSwitchToLogin, onOpenTerms }: Props) {
         </button>
       </form>
 
+      {/* Divisor "O registrate con" */}
+      <div className="relative mt-6 mb-4">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-slate-200 dark:border-slate-800"></div>
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-3 bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400">
+            O registrate con
+          </span>
+        </div>
+      </div>
+
+      {/* Botones OAuth */}
+      <div className="space-y-3">
+        <button
+          type="button"
+          className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-medium text-slate-700 dark:text-slate-200 text-sm"
+        >
+          <GoogleIcon />
+          Registrarse con Google
+        </button>
+        <button
+          type="button"
+          className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-medium text-slate-700 dark:text-slate-200 text-sm"
+        >
+          <FacebookIcon />
+          Registrarse con Facebook
+        </button>
+      </div>
+
       {/* Link a Login */}
-      <p className="mt-4 text-center text-sm text-slate-600 dark:text-slate-400">
+      <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
         ¿Ya tenés una cuenta?{" "}
         <button
           onClick={onSwitchToLogin}

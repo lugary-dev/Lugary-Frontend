@@ -87,7 +87,7 @@ const PromotedSection = ({ espacios, onCardClick }: { espacios: Espacio[], onCar
   if (!espacios || espacios.length === 0) return null;
 
   return (
-    <section className="w-screen ml-[calc(50%-50vw)] py-16 bg-amber-50 dark:bg-slate-900/50">
+    <section className="w-screen ml-[calc(50%-50vw)] pt-6 pb-16 bg-amber-50 dark:bg-slate-900/50">
       <div className="max-w-7xl mx-auto px-1 md:px-2">
         {/* Encabezado Premium */}
         <div className="flex items-center gap-3 mb-6">
@@ -230,7 +230,8 @@ export default function EspaciosPage() {
   const [busqueda, setBusqueda] = useState("");
   const debouncedBusqueda = useDebounce(busqueda, 500);
 
-  const [filtroTipo, setFiltroTipo] = useState<string | null>(null);
+  const [filtroTipo, setFiltroTipo] = useState<string[]>([]);
+  const [filtroAmenidades, setFiltroAmenidades] = useState<string[]>([]);
   const [filtroCapacidad, setFiltroCapacidad] = useState<number | null>(null);
   const [filtroEstrellas, setFiltroEstrellas] = useState<number | null>(null);
   const [filtroDistancia, setFiltroDistancia] = useState<number | null>(null);
@@ -243,9 +244,12 @@ export default function EspaciosPage() {
 
   // --- ESTADOS DE UI (DROPDOWNS Y SCROLL) ---
   const [openDropdown, setOpenDropdown] = useState<
-    "tipo" | "capacidad" | "estrellas" | "distancia" | null
+    "tipo" | "capacidad" | "estrellas" | "distancia" | "amenidades" | null
   >(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  
+  // --- ESTADO DEL MAPA (PROYECTOR) ---
+  const [isMapOpen, setIsMapOpen] = useState(false);
 
   // --- ESTADOS DE UBICACIÓN ---
   const [userCoords, setUserCoords] = useState<{ lat: number; lon: number } | null>(
@@ -263,7 +267,7 @@ export default function EspaciosPage() {
   // --- EFECTO: Resetear paginación al cambiar filtros ---
   useEffect(() => {
     setPagina(0);
-  }, [debouncedBusqueda, filtroTipo, filtroCapacidad, filtroEstrellas, filtroDistancia, userCoords]);
+  }, [debouncedBusqueda, filtroTipo, filtroAmenidades, filtroCapacidad, filtroEstrellas, filtroDistancia, userCoords]);
 
   // --- CARGA DE DATOS ---
   useEffect(() => {
@@ -286,7 +290,8 @@ export default function EspaciosPage() {
         // 2. Filtros (El backend debe estar preparado para recibir estos parámetros)
         // Si tu backend aún no tiene estos @RequestParam en el Controller,
         // simplemente los ignorará y devolverá la lista filtrada solo por texto.
-        if (filtroTipo) params.tipo = filtroTipo;
+        if (filtroTipo.length > 0) params.tipo = filtroTipo.join(",");
+        if (filtroAmenidades.length > 0) params.amenidades = filtroAmenidades.join(",");
         if (filtroCapacidad) params.capacidadMinima = filtroCapacidad;
         if (filtroEstrellas) params.calificacionMinima = filtroEstrellas;
 
@@ -332,7 +337,7 @@ export default function EspaciosPage() {
 
     cargar();
   }, [
-    pagina, debouncedBusqueda, filtroTipo, filtroCapacidad, filtroEstrellas, filtroDistancia, userCoords
+    pagina, debouncedBusqueda, filtroTipo, filtroAmenidades, filtroCapacidad, filtroEstrellas, filtroDistancia, userCoords
   ]);
 
   const handleCargarMas = () => {
@@ -381,6 +386,8 @@ export default function EspaciosPage() {
         setBusqueda={setBusqueda}
         filtroTipo={filtroTipo}
         setFiltroTipo={setFiltroTipo}
+        filtroAmenidades={filtroAmenidades}
+        setFiltroAmenidades={setFiltroAmenidades}
         filtroCapacidad={filtroCapacidad}
         setFiltroCapacidad={setFiltroCapacidad}
         filtroEstrellas={filtroEstrellas}
@@ -394,10 +401,10 @@ export default function EspaciosPage() {
         setUserCoords={setUserCoords}
         locationError={locationError}
         setLocationError={setLocationError}
+        onOpenMap={() => setIsMapOpen(true)}
+        isMapOpen={isMapOpen}
+        onCloseMap={() => setIsMapOpen(false)}
       />
-
-      {/* Espacio de respiro */}
-      <div className="pt-20"></div>
 
       {/* SECCIÓN DE ESPACIOS DESTACADOS (CARRUSEL) */}
       {!cargando && !errorMensaje && espacios.length > 0 && busqueda === "" && (

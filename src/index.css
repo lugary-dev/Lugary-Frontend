@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+/* [NUEVO] Forzar la barra de scroll para evitar saltos de layout al abrir modales */
+html {
+  overflow-y: scroll;
+}
+
 html {
   font-size: 90%;
 }

@@ -55,6 +55,13 @@ const IconLoft = ({ className = "w-5 h-5" }) => (
   </svg>
 );
 
+const IconPelotero = ({ className = "w-5 h-5" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 21.75v-2.625" />
+  </svg>
+);
+
 const IconOtro = ({ className = "w-5 h-5" }) => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={className}>
     <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM12.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0zM18.75 12a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
@@ -65,6 +72,7 @@ const ESPACIO_TYPES_CATEGORIZED = [
   { category: "Eventos", options: [
       { value: "Quincho", label: "Quincho", icon: <IconQuincho /> },
       { value: "Salón de Fiestas", label: "Salón de Fiestas", icon: <IconSalon /> },
+      { value: "Pelotero", label: "Pelotero", icon: <IconPelotero /> },
   ]},
   { category: "Aire Libre", options: [
       { value: "Casaquinta / Parque", label: "Casaquinta / Parque", icon: <IconParque /> },

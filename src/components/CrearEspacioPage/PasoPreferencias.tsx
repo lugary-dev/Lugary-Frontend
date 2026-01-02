@@ -1,5 +1,5 @@
 import React from 'react';
-import { LuCircleCheck } from "react-icons/lu";
+import { LuCircleCheck, LuSmartphone, LuMessageCircle, LuMail } from "react-icons/lu";
 
 interface PasoPreferenciasProps {
   tipoReserva: 'INSTANTANEA' | 'MANUAL';
@@ -92,34 +92,54 @@ const PasoPreferencias = ({
               <button
                 type="button"
                 onClick={() => handleChange(setTipoReserva, 'INSTANTANEA')}
-                className={`p-4 rounded-xl border-2 text-left transition-all ${
+                className={`p-4 rounded-xl border-2 text-left transition-all relative ${
                   tipoReserva === 'INSTANTANEA'
                     ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-600'
                     : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
                 }`}
               >
-                <div className="flex justify-between items-start mb-2">
-                  <span className="font-bold text-slate-900 dark:text-white">Reserva Instantánea</span>
-                  {tipoReserva === 'INSTANTANEA' && <LuCircleCheck className="text-blue-600" />}
+                {tipoReserva === 'INSTANTANEA' && (
+                  <div className="absolute top-4 right-4">
+                    <LuCircleCheck className="text-blue-600 w-5 h-5" />
+                  </div>
+                )}
+                <div className="mb-2 pr-8">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-bold text-slate-900 dark:text-white">Reserva Instantánea</span>
+                    <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full uppercase tracking-wide whitespace-nowrap">Más elegida</span>
+                  </div>
                 </div>
-                <p className="text-sm text-slate-500">Los usuarios confirman al instante. Aumenta tu visibilidad y reservas.</p>
-                <span className="inline-block mt-3 text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded uppercase">Recomendado</span>
+                <p className="text-sm text-slate-600 dark:text-slate-300 mb-3">
+                  Confirmación automática. Te avisamos al instante por WhatsApp, Email y App. <span className="font-semibold text-blue-600 dark:text-blue-400">¡No se te escapa ninguna reserva!</span>
+                </p>
+                
+                <div className="flex items-center gap-3 text-[11px] font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800/50 p-2 rounded-lg border border-slate-100 dark:border-slate-700/50">
+                   <div className="flex items-center gap-1.5"><LuSmartphone className="w-3.5 h-3.5" /> App</div>
+                   <div className="w-px h-3 bg-slate-200 dark:bg-slate-700"></div>
+                   <div className="flex items-center gap-1.5"><LuMessageCircle className="w-3.5 h-3.5" /> WhatsApp</div>
+                   <div className="w-px h-3 bg-slate-200 dark:bg-slate-700"></div>
+                   <div className="flex items-center gap-1.5"><LuMail className="w-3.5 h-3.5" /> Email</div>
+                </div>
               </button>
 
               <button
                 type="button"
                 onClick={() => handleChange(setTipoReserva, 'MANUAL')}
-                className={`p-4 rounded-xl border-2 text-left transition-all ${
+                className={`p-4 rounded-xl border-2 text-left transition-all relative ${
                   tipoReserva === 'MANUAL'
                     ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-600'
                     : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'
                 }`}
               >
-                <div className="flex justify-between items-start mb-2">
+                {tipoReserva === 'MANUAL' && (
+                  <div className="absolute top-4 right-4">
+                    <LuCircleCheck className="text-blue-600 w-5 h-5" />
+                  </div>
+                )}
+                <div className="mb-2 pr-8">
                   <span className="font-bold text-slate-900 dark:text-white">Revisión Manual</span>
-                  {tipoReserva === 'MANUAL' && <LuCircleCheck className="text-blue-600" />}
                 </div>
-                <p className="text-sm text-slate-500">Tenés 24hs para aprobar o rechazar cada solicitud. Más control, menos reservas.</p>
+                <p className="text-sm text-slate-500">Tenés 24hs para aprobar cada pedido. Mayor control, pero genera esperas que reducen tus reservas.</p>
               </button>
             </div>
           </section>

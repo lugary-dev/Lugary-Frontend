@@ -134,7 +134,7 @@ export default function Navbar({ onOpenChat }: NavbarProps) {
               }`}
             >
               <SearchIcon />
-              Espacios
+              Explorar
             </button>
 
             <div className="h-4 w-px bg-slate-200 dark:bg-slate-700"></div>
