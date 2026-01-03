@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction, useRef, useState, useEffect } from "react";
-import { LuNavigation } from "react-icons/lu"; 
-import MapProjector from "./MapProjector";
+import { createPortal } from "react-dom";
+import { LuNavigation, LuMapPin, LuX, LuChevronUp } from "react-icons/lu"; 
 import bannerImg from "../../images/banner.png";
 
 // --- Constantes de Datos ---
@@ -96,16 +96,47 @@ export const EspaciosHeader = ({
   // --- NUEVO: Estado para mostrar sugerencias de búsqueda ---
   const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
 
+  // --- LÓGICA DEL MAP PROJECTOR INTEGRADA ---
+  const [showMapContent, setShowMapContent] = useState(false);
+
+  // [CORRECCIÓN] Bloqueo de scroll que MANTIENE la posición visual
+  useEffect(() => {
+    if (isMapOpen) {
+      const scrollY = window.scrollY;
+      // Congelamos el body en la posición actual
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      
+      return () => {
+        // Restauramos el scroll
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        window.scrollTo({ top: scrollY, behavior: 'instant' });
+      };
+    }
+  }, [isMapOpen]);
+
+  // Retrasamos la carga del contenido (el mapa pesado) hasta que la animación empiece
+  useEffect(() => {
+    if (isMapOpen) {
+      const timer = setTimeout(() => setShowMapContent(true), 200);
+      return () => clearTimeout(timer);
+    } else {
+      setShowMapContent(false);
+    }
+  }, [isMapOpen]);
+
   useEffect(() => {
     const handleScroll = () => {
       if (headerRef.current && searchBarRef.current) {
         const headerRect = headerRef.current.getBoundingClientRect();
         const headerBottom = headerRect.bottom;
-        const navHeight = 64;
-        const overlapOffset = 36; // 2.25rem (-mt-9) compensa el margen negativo
+        const navHeight = 80; // Ajuste para que se pegue un poco antes
         
-        // Ajustamos el punto de quiebre para que coincida exactamente cuando la barra se pega visualmente
-        const shouldBeSticky = headerBottom <= navHeight + overlapOffset;
+        // Cambio de estado Sticky
+        const shouldBeSticky = headerBottom <= navHeight;
         setIsSearchBarSticky(shouldBeSticky);
       }
     };
@@ -353,7 +384,7 @@ export const EspaciosHeader = ({
   return (
     <>
     <section ref={headerRef} className="relative w-screen ml-[calc(50%-50vw)] -mt-8 h-[550px]">
-      {/* Contenedor de Fondo con Imagen y Overlay */}
+      {/* Contenedor de Fondo */}
       <div className="absolute inset-0 overflow-hidden">
         <img
           src={bannerImg}
@@ -362,17 +393,29 @@ export const EspaciosHeader = ({
         />
         <div className="absolute inset-0 bg-black/20"></div>
       </div>
-    </section>
 
-      {/* Barra de Búsqueda Flotante (Sticky) */}
-      {/* Usamos sticky para que el navegador maneje la posición suavemente */}
-      {/* -mt-9 para que se superponga visualmente al banner (mitad de altura aprox) */}
+      {/* BARRA DE BÚSQUEDA FLOTANTE (Ahora integrada aquí) */}
       <div 
         ref={searchBarRef} 
-        className={`sticky top-16 z-40 -mt-9 px-4 transition-all duration-500 ease-out ${isSearchBarSticky ? 'py-2' : 'py-0'}`}
+        className={`
+          w-full ${isMapOpen ? 'z-[60]' : 'z-40'} 
+          ${isSearchBarSticky 
+            ? 'fixed top-20 left-0 px-4' // Sticky: Pegado arriba
+            : 'absolute bottom-0 left-0 px-4 translate-y-1/2' // Normal: Centrado en el borde inferior
+          }
+        `}
       >
-        <div className="mx-auto max-w-6xl transition-all duration-500 ease-out">
-        <div className="w-full rounded-[24px] shadow-2xl shadow-slate-900/20 p-2.5 pl-6 flex items-center gap-4 bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-white/20 dark:border-slate-700/30 relative z-20">
+        <div className="mx-auto max-w-6xl relative">
+            {/* CONTENEDOR VISUAL (CÁPSULA BLANCA) */}
+            <div className={`
+                w-full rounded-[24px] p-2.5 pl-6 flex items-center gap-4 backdrop-blur-md border 
+                transition-all duration-300
+                ${isSearchBarSticky 
+                    ? 'bg-white dark:bg-slate-900 shadow-xl border-slate-200 dark:border-slate-800' 
+                    : 'bg-white/95 dark:bg-slate-800/95 shadow-2xl shadow-slate-900/20 border-white/20 dark:border-slate-700/30'
+                }
+                relative z-20
+            `}>
           
           {/* Input de búsqueda principal */}
           <div className="flex-grow flex items-center gap-3 relative">
@@ -595,9 +638,54 @@ export const EspaciosHeader = ({
         )}
 
         {/* PROYECTOR DEL MAPA (Integrado en el Header) */}
-        <MapProjector isOpen={isMapOpen} onClose={onCloseMap} />
+        {/* BACKDROP (Fondo oscuro) - Usamos Portal para que cubra toda la pantalla sin importar el z-index del padre */}
+        {createPortal(
+          <div 
+            className={`fixed inset-0 z-[55] bg-slate-900/60 backdrop-blur-sm transition-opacity duration-500
+              ${isMapOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+            onClick={onCloseMap}
+          />,
+          document.body
+        )}
+
+        {/* EL PROYECTOR */}
+        <div 
+          className={`
+            absolute left-4 right-4 z-10
+            flex flex-col items-center justify-end
+            bg-white dark:bg-slate-900 shadow-2xl
+            overflow-hidden 
+            rounded-b-[40px] border-x border-b border-slate-200 dark:border-slate-800
+            transition-[height] duration-700 ease-in-out cubic-bezier(0.4, 0, 0.2, 1)
+          `}
+          style={{ 
+            top: 'calc(100% - 24px)', 
+            // Altura: Si está abierto ocupa 80vh, si no, 0px.
+            height: isMapOpen ? '80vh' : '0px'
+          }}
+        >
+      
+        {/* CONTENIDO DEL MAPA */}
+        <div className={`w-full h-full relative transition-opacity duration-500 delay-300 ${isMapOpen ? 'opacity-100' : 'opacity-0'}`}>
+          {/* Placeholder visual del mapa */}
+          <div className="w-full h-full bg-slate-100 dark:bg-slate-800 relative group">
+            <div className="absolute inset-0 bg-[url('https://upload.wikimedia.org/wikipedia/commons/e/ec/World_map_blank_without_borders.svg')] bg-cover opacity-20 dark:opacity-10"></div>
+            <div className="absolute top-1/3 left-1/4 animate-bounce-slow"><LuMapPin className="w-10 h-10 text-red-500 drop-shadow-lg" fill="currentColor" /></div>
+            <div className="absolute top-1/2 left-1/2 animate-bounce-slow delay-100"><LuMapPin className="w-10 h-10 text-blue-500 drop-shadow-lg" fill="currentColor" /></div>
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none"><span className="bg-white/80 dark:bg-slate-900/80 backdrop-blur px-4 py-2 rounded-full text-slate-600 dark:text-slate-300 font-medium shadow-sm">Usando tus filtros actuales...</span></div>
+          </div>
+        </div>
+
+        {/* LA "CUERDITA" O MANIJA DEL PROYECTOR */}
+        <div className="w-full bg-blue-600 h-6 flex items-center justify-center cursor-pointer hover:bg-blue-700 transition-colors absolute bottom-0 z-50" onClick={onCloseMap}>
+          <div className="w-16 h-1 bg-white/50 rounded-full"></div>
+          <LuChevronUp className="w-4 h-4 text-white absolute -top-3 bg-blue-600 rounded-full p-0.5 border-2 border-white" />
+        </div>
+
+        </div>
         </div>
       </div>
+    </section>
 
       {/* --- MODAL IA OPTIMIZADO PARA LUGARY --- */}
       {isAIModalOpen && (

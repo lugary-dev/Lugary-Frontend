@@ -87,7 +87,7 @@ const PromotedSection = ({ espacios, onCardClick }: { espacios: Espacio[], onCar
   if (!espacios || espacios.length === 0) return null;
 
   return (
-    <section className="w-screen ml-[calc(50%-50vw)] pt-6 pb-16 bg-amber-50 dark:bg-slate-900/50">
+    <section className="w-screen ml-[calc(50%-50vw)] pt-20 pb-16 bg-amber-50 dark:bg-slate-900/50 relative z-0">
       <div className="max-w-7xl mx-auto px-1 md:px-2">
         {/* Encabezado Premium */}
         <div className="flex items-center gap-3 mb-6">

@@ -5,6 +5,7 @@
 /* [NUEVO] Forzar la barra de scroll para evitar saltos de layout al abrir modales */
 html {
   overflow-y: scroll;
+  scrollbar-gutter: stable;
 }
 
 html {
